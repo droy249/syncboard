@@ -64,8 +64,12 @@ app.patch('/api/tasks/:id', async (req, res) => {
   res.json(result[0]);
 });
 
+const connectedUsers = new Set<string>();
+
 io.on('connection', (socket) => {
-  console.log(`User connected: ${socket.id}`);
+    connectedUsers.add(socket.id);
+    io.emit('presence:update', { count: connectedUsers.size });
+    console.log(`User connected: ${socket.id} (${connectedUsers.size} online)`);
 
   // Save new task to database, then broadcast to all clients
   socket.on('task:create', async (data: { title: string }) => {
@@ -84,7 +88,9 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    console.log(`User disconnected: ${socket.id}`);
+    connectedUsers.delete(socket.id);
+    io.emit('presence:update', { count: connectedUsers.size });
+    console.log(`User disconnected: ${socket.id} (${connectedUsers.size} online)`);
   });
 });
 

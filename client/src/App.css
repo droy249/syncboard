@@ -28,6 +28,26 @@ body {
   font-weight: 700;
 }
 
+.presence-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #555;
+}
+
+.presence-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.presence-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
 .task-form {
   display: flex;
   gap: 8px;

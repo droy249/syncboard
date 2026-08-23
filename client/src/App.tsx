@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { socket } from './socket';
 import { Board } from './components/Board';
+import { PresenceBar } from './components/PresenceBar';
 import type { Task } from './types';
 import './App.css';
 
 function App() {
   // Store all tasks in a single array
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [userCount, setUserCount] = useState(1);
 
   // // Create a new task with a unique ID and 'todo' status
   // const handleCreateTask = (title: string) => {
@@ -36,10 +38,16 @@ function App() {
       );
     });
 
+    socket.on('presence:update', (data: { count: number }) => {
+      setUserCount(data.count);
+    });
+
+
     // Clean up listeners when component unmounts
     return () => {
       socket.off('task:created');
       socket.off('task:moved');
+      socket.off('presence:update');
     };
   }, []);
 
@@ -83,6 +91,7 @@ function App() {
     <div className="app">
       <header className="header">
         <h1>SyncBoard</h1>
+        <PresenceBar count={userCount} />
       </header>
       <Board
         tasks={tasks}
