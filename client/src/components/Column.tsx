@@ -6,10 +6,12 @@ interface ColumnProps {
   status: Task['status'];
   tasks: Task[];
   onMoveTask: (id: number, status: Task['status']) => void;
+  onEditTask: (id: number, title: string) => void;
+  onDeleteTask: (id: number) => void;
 }
 
 // Render a column header and its list of task cards
-export function Column({ label, status, tasks, onMoveTask }: ColumnProps) {
+export function Column({ label, status, tasks, onMoveTask, onEditTask, onDeleteTask }: ColumnProps) {
   return (
     <div className="column">
       <h2 className="column-header">
@@ -22,6 +24,8 @@ export function Column({ label, status, tasks, onMoveTask }: ColumnProps) {
             task={task}
             currentStatus={status}
             onMoveTask={onMoveTask}
+            onEditTask={onEditTask}
+            onDeleteTask={onDeleteTask}
           />
         ))}
         {tasks.length === 0 && (

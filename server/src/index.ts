@@ -87,6 +87,34 @@ io.on('connection', (socket) => {
     io.emit('task:moved', result[0]);
   });
 
+    // Delete a task from PostgreSQL and broadcast the deletion
+  socket.on('task:delete', async (data: { id: number }) => {
+    try {
+      await sql`
+        DELETE FROM tasks WHERE id = ${Number(data.id)}
+      `;
+      io.emit('task:deleted', { id: data.id });
+      console.log(`Task deleted: ID ${data.id}`);
+    } catch (err) {
+      console.error('Error deleting task:', err);
+    }
+  });
+
+  // Edit a task's title in PostgreSQL and broadcast the update
+  socket.on('task:edit', async (data: { id: number; title: string }) => {
+    try {
+      const result = await sql`
+        UPDATE tasks SET title = ${data.title} WHERE id = ${Number(data.id)} RETURNING *
+      `;
+      if (result.length > 0) {
+        io.emit('task:edited', result[0]);
+        console.log(`Task edited: ID ${data.id} -> "${data.title}"`);
+      }
+    } catch (err) {
+      console.error('Error editing task:', err);
+    }
+  });
+
   socket.on('disconnect', () => {
     connectedUsers.delete(socket.id);
     io.emit('presence:update', { count: connectedUsers.size });

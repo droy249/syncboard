@@ -6,6 +6,8 @@ interface BoardProps {
   tasks: Task[];
   onCreateTask: (title: string) => void;
   onMoveTask: (id: number, status: Task['status']) => void;
+  onEditTask: (id: number, title: string) => void;
+  onDeleteTask: (id: number) => void;
 }
 
 // Map each column to its status value and display label
@@ -15,7 +17,7 @@ const COLUMNS: { status: Task['status']; label: string }[] = [
   { status: 'done', label: 'Done' },
 ];
 
-export function Board({ tasks, onCreateTask, onMoveTask }: BoardProps) {
+export function Board({ tasks, onCreateTask, onMoveTask, onEditTask, onDeleteTask }: BoardProps) {
   const [newTitle, setNewTitle] = useState('');
 
   // Handle form submission to create a new task
@@ -46,6 +48,8 @@ export function Board({ tasks, onCreateTask, onMoveTask }: BoardProps) {
             status={col.status}
             tasks={tasks.filter((t) => t.status === col.status)}
             onMoveTask={onMoveTask}
+            onEditTask={onEditTask}
+            onDeleteTask={onDeleteTask}
           />
         ))}
       </div>
