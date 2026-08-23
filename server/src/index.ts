@@ -1,3 +1,4 @@
+import path from 'path';
 import express from 'express';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
@@ -20,6 +21,8 @@ const io = new Server(server, {
 
 app.use(cors());
 app.use(express.json());
+// Serve static files from the public directory
+app.use(express.static(path.join(__dirname, '../public')));
 
 // Connect to Neon PostgreSQL
 const sql = neon(process.env.DATABASE_URL!);
@@ -92,36 +95,3 @@ initDb().then(() => {
     console.log(`Server running on port ${PORT}`);
   });
 });
-
-// // Fetch all tasks, sorted by creation date
-// app.get('/api/tasks', async (_req, res) => {
-//   const tasks = await sql`SELECT * FROM tasks ORDER BY created_at ASC`;
-//   res.json(tasks);
-// });
-
-// // Create a new task with 'todo' status
-// app.post('/api/tasks', async (req, res) => {
-//   const { title } = req.body;
-//   const result = await sql`
-//     INSERT INTO tasks (title, status) VALUES (${title}, 'todo') RETURNING *
-//   `;
-//   res.json(result[0]);
-// });
-
-// // Update a task's status (move between columns)
-// app.patch('/api/tasks/:id', async (req, res) => {
-//   const { id } = req.params;
-//   const { status } = req.body;
-//   const result = await sql`
-//     UPDATE tasks SET status = ${status} WHERE id = ${Number(id)} RETURNING *
-//   `;
-//   res.json(result[0]);
-// });
-
-// // Start the server on port 3001 (or PORT from environment)
-// const PORT = process.env.PORT || 3001;
-// initDb().then(() => {
-//   app.listen(PORT, () => {
-//     console.log(`Server running on port ${PORT}`);
-//   });
-// });
